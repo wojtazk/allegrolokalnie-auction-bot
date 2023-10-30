@@ -1,5 +1,7 @@
 from selenium import webdriver
 from selenium.webdriver.common.by import By
+from selenium.webdriver.support.wait import WebDriverWait
+import time
 
 
 class AuctionBot:
@@ -12,16 +14,15 @@ class AuctionBot:
          - browser_visible - (Optional) Whether you want to see the browser or not.
         """
 
-        self.driver_options = webdriver.FirefoxOptions()
-        if not browser_visible:
-            self.driver_options.add_argument('-headless')
+        self.browser_visible = browser_visible
 
+        self.driver_options = webdriver.FirefoxOptions()
         self.driver = webdriver.Firefox(options=self.driver_options)
 
     def __del__(self):
         self.driver.close()
 
-    def login(self, username: str, password: str) -> None:
+    def login(self) -> None:
         """Log in to your allegro account"""
 
         # open login page
@@ -31,13 +32,33 @@ class AuctionBot:
         # reject consent modal
         dont_accept_button = self.driver.find_element(By.CSS_SELECTOR, 'button[data-role="reject-rodo"]')
         dont_accept_button.click()
-        self.driver.implicitly_wait(2)  # FIXME
+        self.driver.implicitly_wait(30)  # FIXME
 
-        # time to log in
-        username_field = self.driver.find_element(By.ID, 'login')
-        password_field = self.driver.find_element(By.ID, 'password')
+        # after successful log in
+        print(self.driver.current_url)
+        WebDriverWait(driver=self.driver, timeout=100, poll_frequency=0.5) \
+            .until(lambda x: (self.driver.current_url == 'https://allegro.pl/'))
 
-        username_field.send_keys(username)
-        password_field.send_keys(password)
+        username = self.driver.find_element(By.CSS_SELECTOR, 'span[data-role="header-username"]') \
+            .get_attribute('innerHTML')
+        print(f'Successfully logged in as: {username}')
+        time.sleep(10)  # FIXME
 
-        print(username_field.get_attribute('value'))  # TODO: delete it later
+        # if user set browser visibility to False -> hijack session and open in headless browser
+        if not self.browser_visible:
+            self.driver_options.add_argument('-headless')
+
+            cookies = self.driver.get_cookies()
+            self.driver.close()
+
+            self.driver = webdriver.Firefox(options=self.driver_options)
+            self.driver.get('https://allegro.pl/')
+            for cookie in cookies:
+                self.driver.add_cookie(cookie)
+            self.driver.get('https://allegro.pl/')
+
+        # FIXME: just a quick test for a headless browser
+        username = self.driver.find_element(By.CSS_SELECTOR, 'span[data-role="header-username"]') \
+            .get_attribute('innerHTML')
+        print(username)
+        time.sleep(30)  # FIXME

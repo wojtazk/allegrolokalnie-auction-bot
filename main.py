@@ -3,14 +3,15 @@ from user_credentials_dialog import UserCredentialsDialog
 
 
 # get user's credentials
-credentials_dialog = UserCredentialsDialog()
-user_login, user_password = credentials_dialog.get_credentials()
-if not (user_login and user_password):
-    exit(1)
+# credentials_dialog = UserCredentialsDialog()
+# user_login, user_password = credentials_dialog.get_credentials()
+# if not (user_login and user_password):
+#     exit(1)
 
 
 # create instance of AuctionBot object
-auction_bot = AuctionBot(browser_visible=True)
+auction_bot = AuctionBot(browser_visible=False)
 
-# login with provided username and password
-auction_bot.login(user_login, user_password)
+# login with normal browser (gui),
+# if you set the browser_visible to False then the browser will change to a headless browser
+auction_bot.login()
