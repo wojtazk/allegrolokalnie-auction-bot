@@ -1,13 +1,6 @@
-from selenium import webdriver
-import time
+from auction_bot import AuctionBot
 
 
-options = webdriver.FirefoxOptions()
-options.add_argument('-headless')
-driver = webdriver.Firefox(options=options)
+auction_bot = AuctionBot()
 
-driver.get('https://wojtazk.github.io/')
-time.sleep(5)
-print('Initialized headless browser')
-
-driver.quit()
+auction_bot.login('marek', 'lewarek')
