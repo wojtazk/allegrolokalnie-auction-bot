@@ -11,6 +11,7 @@ class UserCredentialsDialog:
 
         # initialize tk
         self.root = tk.Tk()
+        self.root.title('Provide Credentials')
 
         # declare padding for modal elements
         self.padding = {'padx': 50, 'pady': 5}
@@ -39,7 +40,7 @@ class UserCredentialsDialog:
             # kill dialog
             self.root.destroy()
 
-            print(username, password)
+            print(username, password)  # TODO: delete it later
             # save username and password as instance variables
             self.username_entry = username
             self.password_entry = password
