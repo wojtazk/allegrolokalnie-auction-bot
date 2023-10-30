@@ -13,7 +13,7 @@ class AuctionBot:
         """
 
         self.driver_options = webdriver.FirefoxOptions()
-        if browser_visible:
+        if not browser_visible:
             self.driver_options.add_argument('-headless')
 
         self.driver = webdriver.Firefox(options=self.driver_options)
@@ -26,12 +26,12 @@ class AuctionBot:
 
         # open login page
         self.driver.get('https://allegro.pl/logowanie')
-        self.driver.implicitly_wait(2)
+        self.driver.implicitly_wait(2)  # FIXME
 
         # reject consent modal
         dont_accept_button = self.driver.find_element(By.CSS_SELECTOR, 'button[data-role="reject-rodo"]')
         dont_accept_button.click()
-        self.driver.implicitly_wait(2)
+        self.driver.implicitly_wait(2)  # FIXME
 
         # time to log in
         username_field = self.driver.find_element(By.ID, 'login')
@@ -40,5 +40,4 @@ class AuctionBot:
         username_field.send_keys(username)
         password_field.send_keys(password)
 
-        print(username_field.get_attribute('value'))
-
+        print(username_field.get_attribute('value'))  # TODO: delete it later

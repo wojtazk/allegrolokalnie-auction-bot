@@ -10,7 +10,7 @@ if not (user_login and user_password):
 
 
 # create instance of AuctionBot object
-auction_bot = AuctionBot()
+auction_bot = AuctionBot(browser_visible=True)
 
 # login with provided username and password
 auction_bot.login(user_login, user_password)
