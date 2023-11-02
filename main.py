@@ -1,5 +1,6 @@
 from auction_bot import AuctionBot
-from user_credentials_dialog import UserCredentialsDialog
+# from user_credentials_dialog import UserCredentialsDialog
+from helpers import ask_user_for_info, login_info
 
 
 # get user's credentials
@@ -9,9 +10,15 @@ from user_credentials_dialog import UserCredentialsDialog
 #     exit(1)
 
 
-# create instance of AuctionBot object
-auction_bot = AuctionBot(browser_visible=False)
+# ask user to provide information for the bot
+bot_arguments = ask_user_for_info()
+
 
 # login with normal browser (gui),
 # if you set the browser_visible to False then the browser will change to a headless browser
+login_info()
+input()
+
+# create instance of AuctionBot object
+auction_bot = AuctionBot(**bot_arguments)
 auction_bot.login()
