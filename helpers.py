@@ -6,7 +6,7 @@ RESET = '\033[0m'
 
 def _get_auction_info() -> (str, int, int, bool, str):
     auction_url = input(f"Link for the auction (ex: https://example.com): ")
-    if (auction_url == '') or (' ' in auction_url):
+    if (auction_url == '') or (' ' in auction_url) or ('https://allegrolokalnie.pl/' not in auction_url):
         raise ValueError('Wrong URL provided!')
 
     price_limit = int(input(f"Set the item's upper price limit (integer): "))  # the maximum price you want to pay
@@ -61,3 +61,7 @@ def login_info() -> None:
 
 def successful_login_info(username) -> None:
     print(f'{GREEN}Successfully logged in as:{RESET} {BLUE}{username}{RESET}')
+
+
+def print_auction_info(item: str, current_price: int) -> None:
+    print(f'item: {BLUE}{item}{RESET}, current price: {BLUE}{current_price} zł{RESET}')

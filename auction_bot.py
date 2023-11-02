@@ -1,7 +1,7 @@
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
-from helpers import successful_login_info
+from helpers import successful_login_info, print_auction_info
 import time
 
 
@@ -21,8 +21,11 @@ class AuctionBot:
         self.auction_url = auction_url
         self.price_limit = price_limit
         self.increment_value = increment_value
-
         self.browser_visible = browser_visible
+
+        self.auction_item = None
+        self.current_price = None
+        self.next_bid = None
 
         self.driver_options = webdriver.FirefoxOptions()
         self.driver = webdriver.Firefox(options=self.driver_options)
@@ -34,14 +37,14 @@ class AuctionBot:
         """Log in to your allegro account"""
 
         # open login page
-        self.driver.get('https://allegro.pl/logowanie')
+        self.driver.get('https://allegrolokalnie.pl/logowanie')
 
         # after successful log in
         WebDriverWait(driver=self.driver, timeout=100, poll_frequency=0.5) \
-            .until(lambda x: (self.driver.current_url == 'https://allegro.pl/'))
+            .until(lambda x: ('https://allegrolokalnie.pl' in self.driver.current_url))
 
         self.driver.implicitly_wait(30)
-        username = self.driver.find_element(By.CSS_SELECTOR, 'span[data-role="header-username"]') \
+        username = self.driver.find_element(By.CSS_SELECTOR, 'span.mlc-masthead__username') \
             .get_attribute('innerHTML')
         successful_login_info(username)  # print info about logged user
         time.sleep(10)  # FIXME
@@ -51,19 +54,38 @@ class AuctionBot:
             self._stealth_mode()
 
         # FIXME: just a quick test for a headless browser
-        username = self.driver.find_element(By.CSS_SELECTOR, 'span[data-role="header-username"]') \
-            .get_attribute('innerHTML')
-        print(username)
-        time.sleep(30)  # FIXME
+        # username = self.driver.find_element(By.CSS_SELECTOR, 'span.mlc-masthead__username') \
+        #     .get_attribute('innerHTML')
+        # print(username)
+        # time.sleep(10)  # FIXME
 
-    def _stealth_mode(self):
+    def _stealth_mode(self) -> None:
+        """Change from normal browser to headless"""
         self.driver_options.add_argument('-headless')
 
         cookies = self.driver.get_cookies()
         self.driver.close()
 
         self.driver = webdriver.Firefox(options=self.driver_options)
-        self.driver.get('https://allegro.pl/')
+        self.driver.get('https://allegrolokalnie.pl/')
         for cookie in cookies:
             self.driver.add_cookie(cookie)
-        self.driver.get('https://allegro.pl/')
+        self.driver.get('https://allegrolokalnie.pl')
+
+    def get_auction_details(self) -> None:
+        self.driver.get(self.auction_url)
+
+        # get the title of the auction
+        auction_heading = self.driver.find_element(By.CSS_SELECTOR, 'h1.ml-heading')
+        WebDriverWait(driver=self.driver, timeout=10, poll_frequency=1).until(lambda x: auction_heading.is_displayed())
+
+        self.auction_item = auction_heading.text
+
+        # auctions dont have decimal parts, only integers
+        current_price_element = self.driver.find_element(By.CSS_SELECTOR, 'span.ml-offer-price__dollars')
+        WebDriverWait(driver=self.driver, timeout=10, poll_frequency=1) \
+            .until(lambda x: current_price_element.is_displayed())
+
+        current_price = current_price_element.get_attribute('innerHTML')
+        self.current_price = int(current_price or -1)
+        print_auction_info(self.auction_item, self.current_price)  # FIXME

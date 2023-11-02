@@ -11,14 +11,26 @@ from helpers import ask_user_for_info, login_info
 
 
 # ask user to provide information for the bot
-bot_arguments = ask_user_for_info()
+# bot_arguments = ask_user_for_info()  # FIXME
 
+
+# inform user about logging in
+# login_info()
+# input()
+
+# create instance of AuctionBot object
+# FIXME: uncomment this
+# auction_bot = AuctionBot(**bot_arguments)
 
 # login with normal browser (gui),
 # if you set the browser_visible to False then the browser will change to a headless browser
-login_info()
-input()
+# auction_bot.login()
 
-# create instance of AuctionBot object
-auction_bot = AuctionBot(**bot_arguments)
-auction_bot.login()
+# FIXME: get auction details test
+test_bot = AuctionBot('https://allegrolokalnie.pl/oferta/raspberry-pi-4-model-b-416-gb',
+                      160, 1, False)
+
+# test_bot.login()
+test_bot.get_auction_details()
+
+
