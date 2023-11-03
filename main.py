@@ -1,6 +1,6 @@
 from auction_bot import AuctionBot
 # from user_credentials_dialog import UserCredentialsDialog
-from helpers import ask_user_for_info, login_info
+from helpers import ask_user_for_info, print_login_info
 
 
 # get user's credentials

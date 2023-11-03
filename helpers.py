@@ -55,11 +55,11 @@ def ask_user_for_info() -> {str, int, int, bool}:
     }
 
 
-def login_info() -> None:
+def print_login_info() -> None:
     print(f'{GREEN}Press enter and login to your allegro account in the browser...{RESET}', end='')
 
 
-def successful_login_info(username) -> None:
+def print_successful_login_info(username) -> None:
     print(f'{GREEN}Successfully logged in as:{RESET} {BLUE}{username}{RESET}')
 
 

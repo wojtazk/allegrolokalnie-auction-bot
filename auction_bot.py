@@ -1,7 +1,7 @@
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
-from helpers import successful_login_info, print_auction_info
+from helpers import print_successful_login_info, print_auction_info
 import time
 
 
@@ -46,7 +46,7 @@ class AuctionBot:
         self.driver.implicitly_wait(30)
         username = self.driver.find_element(By.CSS_SELECTOR, 'span.mlc-masthead__username') \
             .get_attribute('innerHTML')
-        successful_login_info(username)  # print info about logged user
+        print_successful_login_info(username)  # print info about logged user
         time.sleep(10)  # FIXME
 
         # if user set browser visibility to False -> hijack session and open in headless browser
@@ -72,20 +72,37 @@ class AuctionBot:
             self.driver.add_cookie(cookie)
         self.driver.get('https://allegrolokalnie.pl')
 
-    def get_auction_details(self) -> None:
-        self.driver.get(self.auction_url)
+    def _go_to_auction_url(self) -> None:
+        if self.driver.current_url != self.auction_url:
+            self.driver.get(self.auction_url)
 
-        # get the title of the auction
+    def get_auction_title(self) -> str:
+        self._go_to_auction_url()
+
         auction_heading = self.driver.find_element(By.CSS_SELECTOR, 'h1.ml-heading')
-        WebDriverWait(driver=self.driver, timeout=10, poll_frequency=1).until(lambda x: auction_heading.is_displayed())
+        WebDriverWait(driver=self.driver, timeout=10, poll_frequency=1).until(
+            lambda x: auction_heading.is_displayed()
+        )
 
-        self.auction_item = auction_heading.text
+        return auction_heading.text or ''
+
+    def get_auction_current_price(self) -> int:
+        self._go_to_auction_url()
 
         # auctions dont have decimal parts, only integers
         current_price_element = self.driver.find_element(By.CSS_SELECTOR, 'span.ml-offer-price__dollars')
         WebDriverWait(driver=self.driver, timeout=10, poll_frequency=1) \
             .until(lambda x: current_price_element.is_displayed())
 
-        current_price = current_price_element.get_attribute('innerHTML')
-        self.current_price = int(current_price or -1)
+        return int(current_price_element.get_attribute('innerHTML') or -1)
+
+    def get_auction_details(self) -> None:
+        self._go_to_auction_url()
+
+        # get the title of the auction
+        self.auction_item = self.get_auction_title()
+
+        # get current price
+        self.current_price = self.get_auction_current_price()
+
         print_auction_info(self.auction_item, self.current_price)  # FIXME
