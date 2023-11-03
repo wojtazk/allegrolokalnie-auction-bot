@@ -1,6 +1,9 @@
 from auction_bot import AuctionBot
 # from user_credentials_dialog import UserCredentialsDialog
-from helpers import ask_user_for_info, print_login_info
+from helpers import ask_user_for_info, print_login_info, print_message
+from selenium.common.exceptions import (NoSuchElementException, NoSuchWindowException,
+                                        WebDriverException, InvalidSessionIdException)
+import time
 
 
 # get user's credentials
@@ -9,28 +12,40 @@ from helpers import ask_user_for_info, print_login_info
 # if not (user_login and user_password):
 #     exit(1)
 
+try:
+    # ask user to provide information for the bot
+    bot_arguments = ask_user_for_info()
 
-# ask user to provide information for the bot
-# bot_arguments = ask_user_for_info()  # FIXME
+    # inform user about logging in
+    print_login_info()
+    input()
 
+    # create instance of AuctionBot object
+    auction_bot = AuctionBot(**bot_arguments)
 
-# inform user about logging in
-# login_info()
-# input()
+    # login with normal browser (gui),
+    # if you set the browser_visible to False then the browser will change to a headless browser
+    auction_bot.login()
 
-# create instance of AuctionBot object
-# FIXME: uncomment this
-# auction_bot = AuctionBot(**bot_arguments)
+    # get auction details
+    auction_bot.get_auction_details()
 
-# login with normal browser (gui),
-# if you set the browser_visible to False then the browser will change to a headless browser
-# auction_bot.login()
+    # check if the auction is still active
+    auction_bot.check_if_offer_is_active()
 
-# FIXME: get auction details test
-test_bot = AuctionBot('https://allegrolokalnie.pl/oferta/raspberry-pi-4-model-b-416-gb',
-                      160, 1, False)
+    # make an offer
+    auction_bot.make_an_offer()
 
-# test_bot.login()
-test_bot.get_auction_details()
+    # wait for price change and then stuff
+    price_check_frequency = auction_bot.get_price_check_frequency()
+    while True:
+        while not auction_bot.price_changed():
+            auction_bot.check_if_offer_is_active()
+            time.sleep(price_check_frequency)
 
-
+        auction_bot.make_an_offer()
+except (KeyboardInterrupt, NoSuchElementException, NoSuchWindowException,
+        WebDriverException, InvalidSessionIdException):
+    print()
+    print_message('Bot terminated!', False)
+    exit(1)

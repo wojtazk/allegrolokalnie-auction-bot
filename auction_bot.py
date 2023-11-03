@@ -1,14 +1,15 @@
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
-from helpers import print_successful_login_info, print_auction_info
-import time
+from selenium.common.exceptions import NoSuchElementException, WebDriverException
+from helpers import print_successful_login_info, print_auction_info, print_message
 
 
 class AuctionBot:
     """Creates the AuctionBot object."""
 
-    def __init__(self, auction_url: str, price_limit: int, increment_value: int, browser_visible: bool = False) -> None:
+    def __init__(self, auction_url: str, price_limit: int,
+                 price_check_frequency: int = 60, browser_visible: bool = False):
         """Creates the new instance of AuctionBot object.
 
         :Args:
@@ -20,18 +21,19 @@ class AuctionBot:
 
         self.auction_url = auction_url
         self.price_limit = price_limit
-        self.increment_value = increment_value
         self.browser_visible = browser_visible
+        self.price_check_frequency = price_check_frequency
 
         self.auction_item = None
         self.current_price = None
-        self.next_bid = None
+        self.your_offer = 0
 
         self.driver_options = webdriver.FirefoxOptions()
         self.driver = webdriver.Firefox(options=self.driver_options)
+        self.driver.implicitly_wait(2)  # wait 2 seconds after every driver command
 
     def __del__(self):
-        self.driver.close()
+        self.driver.quit()
 
     def login(self) -> None:
         """Log in to your allegro account"""
@@ -43,11 +45,9 @@ class AuctionBot:
         WebDriverWait(driver=self.driver, timeout=100, poll_frequency=0.5) \
             .until(lambda x: ('https://allegrolokalnie.pl' in self.driver.current_url))
 
-        self.driver.implicitly_wait(30)
         username = self.driver.find_element(By.CSS_SELECTOR, 'span.mlc-masthead__username') \
             .get_attribute('innerHTML')
         print_successful_login_info(username)  # print info about logged user
-        time.sleep(10)  # FIXME
 
         # if user set browser visibility to False -> hijack session and open in headless browser
         if not self.browser_visible:
@@ -76,6 +76,12 @@ class AuctionBot:
         if self.driver.current_url != self.auction_url:
             self.driver.get(self.auction_url)
 
+    def get_my_bid(self) -> int:
+        return self.your_offer
+
+    def get_price_check_frequency(self) -> int:
+        return self.price_check_frequency
+
     def get_auction_title(self) -> str:
         self._go_to_auction_url()
 
@@ -84,25 +90,86 @@ class AuctionBot:
             lambda x: auction_heading.is_displayed()
         )
 
-        return auction_heading.text or ''
+        self.auction_item = auction_heading.text or ''
+        return self.auction_item
 
     def get_auction_current_price(self) -> int:
         self._go_to_auction_url()
 
-        # auctions dont have decimal parts, only integers
+        # I am too lazy to implement getting the decimal part, deal with it
         current_price_element = self.driver.find_element(By.CSS_SELECTOR, 'span.ml-offer-price__dollars')
-        WebDriverWait(driver=self.driver, timeout=10, poll_frequency=1) \
-            .until(lambda x: current_price_element.is_displayed())
+        WebDriverWait(driver=self.driver, timeout=10, poll_frequency=1).until(
+            lambda x: current_price_element.is_displayed()
+        )
 
-        return int(current_price_element.get_attribute('innerHTML') or -1)
+        self.current_price = int(current_price_element.get_attribute('innerHTML') or -1)
+        return self.current_price
 
-    def get_auction_details(self) -> None:
+    def get_auction_details(self, print_info: bool = True) -> None:
         self._go_to_auction_url()
 
         # get the title of the auction
-        self.auction_item = self.get_auction_title()
+        self.get_auction_title()
 
         # get current price
+        self.get_auction_current_price()
+
+        if print_info:
+            print_auction_info(self.auction_item, self.current_price, self.your_offer)
+
+    def check_if_offer_is_active(self) -> None:
+        self._go_to_auction_url()
+
+        try:
+            auction_ended_banner = self.driver.find_element(By.CSS_SELECTOR, 'p.mlc-offer-ended-banner__text')
+            expired = auction_ended_banner.is_displayed()
+            if expired:
+                print_message('The auction has ended!', False)
+                exit(0)
+        except NoSuchElementException:
+            pass
+
+    def price_changed(self) -> bool:
+        """Wait for the item's price to change."""
+        self._go_to_auction_url()
+
+        # refresh the page just for safety
+        self.driver.refresh()
+
+        current_price_element = self.driver.find_element(By.CSS_SELECTOR, 'span.ml-offer-price__dollars')
+        WebDriverWait(driver=self.driver, timeout=10, poll_frequency=1).until(
+            lambda x: current_price_element.is_displayed()
+        )
+
+        price_changed = self.current_price != int(current_price_element.get_attribute('innerHTML'))
+        if price_changed:
+            self.get_auction_details()
+
+        return price_changed
+
+    def make_an_offer(self) -> None:
+        self._go_to_auction_url()
+
+        # get bidding button
+        bidding_button = self.driver.find_element(By.CSS_SELECTOR, 'button[data-testid="offer-bidding-button"')
+        WebDriverWait(driver=self.driver, timeout=10, poll_frequency=0.2).until(
+            lambda x: bidding_button.is_displayed()
+        )
+
+        # update items current price
         self.current_price = self.get_auction_current_price()
 
-        print_auction_info(self.auction_item, self.current_price)  # FIXME
+        # check if the price is not too high
+        if self.current_price + 1 > self.price_limit:
+            print_message("Price too high!", False)
+            exit(0)
+
+        # calculate your bid, by default the bids increase by 1zł
+        self.your_offer = self.current_price + 1
+
+        # make an offer
+        # bidding_button.click()  # FIXME
+        print_message(f"Click: {bidding_button.get_attribute('innerHTML')}", True)
+
+        # get new details and print
+        self.get_auction_details()
