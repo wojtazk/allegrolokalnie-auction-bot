@@ -53,12 +53,6 @@ class AuctionBot:
         if not self.browser_visible:
             self._stealth_mode()
 
-        # FIXME: just a quick test for a headless browser
-        # username = self.driver.find_element(By.CSS_SELECTOR, 'span.mlc-masthead__username') \
-        #     .get_attribute('innerHTML')
-        # print(username)
-        # time.sleep(10)  # FIXME
-
     def _stealth_mode(self) -> None:
         """Change from normal browser to headless"""
         self.driver_options.add_argument('-headless')
@@ -164,11 +158,11 @@ class AuctionBot:
             print_message("Price too high!", False)
             exit(0)
 
-        # calculate your bid, by default the bids increase by 1zł
+        # calculate your bid, by default the bids on allegrolokalnie increase by 1zł
         self.your_offer = self.current_price + 1
 
         # make an offer
-        # bidding_button.click()  # FIXME
+        bidding_button.click()  # click the "Licytuj" button
         print_message(f"Click: {bidding_button.get_attribute('innerHTML')}", True)
 
         # get new details and print
