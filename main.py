@@ -33,8 +33,9 @@ try:
     # check if the auction is still active
     auction_bot.check_if_offer_is_active()
 
-    # make an offer
-    auction_bot.make_an_offer()
+    # make an offer if user didn't already
+    if auction_bot.get_users_bid() == 0:
+        auction_bot.make_an_offer()
 
     # wait for price change and then stuff
     price_check_frequency = auction_bot.get_price_check_frequency()
@@ -45,7 +46,8 @@ try:
 
         auction_bot.make_an_offer()
 except (KeyboardInterrupt, NoSuchElementException, NoSuchWindowException,
-        WebDriverException, InvalidSessionIdException):
+        WebDriverException, InvalidSessionIdException) as err:
     print()
     print_message('Bot terminated!', False)
+    print_message(type(err).__name__, False)
     exit(1)

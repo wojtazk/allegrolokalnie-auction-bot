@@ -8,7 +8,7 @@ from helpers import print_successful_login_info, print_auction_info, print_messa
 class AuctionBot:
     """Creates the AuctionBot object."""
 
-    def __init__(self, auction_url: str, price_limit: int,
+    def __init__(self, auction_url: str, price_limit: int, users_bid: int,
                  price_check_frequency: int = 60, browser_visible: bool = False):
         """Creates the new instance of AuctionBot object.
 
@@ -24,9 +24,10 @@ class AuctionBot:
         self.browser_visible = browser_visible
         self.price_check_frequency = price_check_frequency
 
+        self.users_bid = users_bid
+
         self.auction_item = None
         self.current_price = None
-        self.your_offer = 0
 
         self.driver_options = webdriver.FirefoxOptions()
         self.driver = webdriver.Firefox(options=self.driver_options)
@@ -70,8 +71,8 @@ class AuctionBot:
         if self.driver.current_url != self.auction_url:
             self.driver.get(self.auction_url)
 
-    def get_my_bid(self) -> int:
-        return self.your_offer
+    def get_users_bid(self) -> int:
+        return self.users_bid
 
     def get_price_check_frequency(self) -> int:
         return self.price_check_frequency
@@ -109,7 +110,7 @@ class AuctionBot:
         self.get_auction_current_price()
 
         if print_info:
-            print_auction_info(self.auction_item, self.current_price, self.your_offer)
+            print_auction_info(self.auction_item, self.current_price, self.users_bid)
 
     def check_if_offer_is_active(self) -> None:
         self._go_to_auction_url()
@@ -149,6 +150,15 @@ class AuctionBot:
         WebDriverWait(driver=self.driver, timeout=10, poll_frequency=0.2).until(
             lambda x: bidding_button.is_displayed()
         )
+        bidding_button.click()  # click the "Licytuj" button, it doesn't make the bid yet
+
+        # get confirmation bidding button
+        confirmation_bidding_button = self.driver.find_element(
+            By.CSS_SELECTOR, 'button[data-testid="offer-bidding-modal-accept"]'
+        )
+        WebDriverWait(driver=self.driver, timeout=10, poll_frequency=0.2).until(
+            lambda x: confirmation_bidding_button.is_displayed()
+        )
 
         # update items current price
         self.current_price = self.get_auction_current_price()
@@ -159,11 +169,11 @@ class AuctionBot:
             exit(0)
 
         # calculate your bid, by default the bids on allegrolokalnie increase by 1zł
-        self.your_offer = self.current_price + 1
+        self.users_bid = self.current_price + 1
 
         # make an offer
-        bidding_button.click()  # click the "Licytuj" button
-        print_message(f"Click: {bidding_button.get_attribute('innerHTML')}", True)
+        print_message(f"Click: {confirmation_bidding_button.get_attribute('innerHTML')}", True)
+        confirmation_bidding_button.click()
 
         # get new details and print
         self.get_auction_details()
