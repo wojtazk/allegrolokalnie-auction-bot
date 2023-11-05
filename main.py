@@ -45,6 +45,7 @@ try:
             time.sleep(price_check_frequency)
 
         auction_bot.make_an_offer()
+
 except (KeyboardInterrupt, NoSuchElementException, NoSuchWindowException,
         WebDriverException, InvalidSessionIdException) as err:
     print()

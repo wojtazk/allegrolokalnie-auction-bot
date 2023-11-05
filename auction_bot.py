@@ -1,3 +1,4 @@
+import time
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
@@ -151,6 +152,7 @@ class AuctionBot:
             lambda x: bidding_button.is_displayed()
         )
         bidding_button.click()  # click the "Licytuj" button, it doesn't make the bid yet
+        del bidding_button  # remove bidding button variable
 
         # get confirmation bidding button
         confirmation_bidding_button = self.driver.find_element(
@@ -174,6 +176,8 @@ class AuctionBot:
         # make an offer
         print_message(f"Click: {confirmation_bidding_button.get_attribute('innerHTML')}", True)
         confirmation_bidding_button.click()
+        del confirmation_bidding_button  # remove confirmation bidding button variable
+        time.sleep(1)  # wait 1 second after clicking the button
 
         # get new details and print
         self.get_auction_details()
