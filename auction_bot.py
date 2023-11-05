@@ -44,7 +44,7 @@ class AuctionBot:
         self.driver.get('https://allegrolokalnie.pl/logowanie')
 
         # after successful log in
-        WebDriverWait(driver=self.driver, timeout=100, poll_frequency=0.5) \
+        WebDriverWait(driver=self.driver, timeout=1000, poll_frequency=0.5) \
             .until(lambda x: ('https://allegrolokalnie.pl' in self.driver.current_url))
 
         username = self.driver.find_element(By.CSS_SELECTOR, 'span.mlc-masthead__username') \
