@@ -12,3 +12,9 @@ pywin32-ctypes = "~=0.2.2"  # for windows .exe
 
 [requires]
 python_version = "3"
+
+
+# pyinstaller build command
+# icon: https://iconduck.com/icons/249696/cart
+# windows: pipenv run pyinstaller --onefile --icon=cart.ico main.py --name AuctionBot.exe
+# linux (manjaro): pipenv run pyinstaller --icon=cart.ico --onefile main.py --name AuctionBot.run
