@@ -39,9 +39,9 @@ def _get_auction_info() -> (str, int, int, int, bool, str):
     print(f'\n{WARN}Check the provided info!{RESET}')
     print(
         f'url: {BLUE}{auction_url}{RESET}',
-        f'price limit: {BLUE}{price_limit}{RESET}',
-        f'your current bid: {BLUE}{users_current_bid}{RESET}',
-        f'price check frequency: {BLUE}{price_check_frequency}{RESET}',
+        f'price limit: {BLUE}{price_limit} zł{RESET}',
+        f'your current bid: {BLUE}{users_current_bid} zł{RESET}',
+        f'price check frequency: {BLUE}{price_check_frequency} sec{RESET}',
         f'browser visibility: {BLUE}{browser_visible}{RESET}',
         sep='\n'
     )
