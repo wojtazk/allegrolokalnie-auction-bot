@@ -8,6 +8,7 @@ selenium = "~=4.14.0"
 
 [dev-packages]
 pyinstaller = "~=6.1.0"
+pywin32-ctypes = "~=0.2.2"  # for windows .exe
 
 [requires]
 python_version = "3"
