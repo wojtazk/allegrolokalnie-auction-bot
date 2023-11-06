@@ -15,8 +15,13 @@ from selenium.common.exceptions import (NoSuchElementException, NoSuchWindowExce
 #     exit(1)
 
 try:
-    # ask user to provide information for the bot
-    bot_arguments = ask_user_for_info()
+    try:
+        # ask user to provide information for the bot
+        bot_arguments = ask_user_for_info()
+    except ValueError as err:
+        # handle wrong info
+        print_message(f'{type(err).__name__}: {err.args[0]}', False)
+        exit(1)
 
     # inform user about logging in
     print_login_info()
