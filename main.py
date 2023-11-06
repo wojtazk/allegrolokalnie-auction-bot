@@ -1,9 +1,11 @@
+import time
+from sys import exit
+
 from auction_bot import AuctionBot
 # from user_credentials_dialog import UserCredentialsDialog
 from helpers import ask_user_for_info, print_login_info, print_message
 from selenium.common.exceptions import (NoSuchElementException, NoSuchWindowException,
                                         WebDriverException, InvalidSessionIdException)
-import time
 
 
 # get user's credentials
