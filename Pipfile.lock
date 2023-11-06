@@ -1,12 +1,11 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "08bc4e7c7821f9cb89ff8301eee2517ee2d08cf6900a011c3ea5e2227d01957b"
+            "sha256": "cefe78c4e8c546b0f16ffdca9c3893cee8c06511b73764c280f96cc275762041"
         },
         "pipfile-spec": 6,
         "requires": {
-            "python_full_version": "3.11.5",
-            "python_version": "3.11"
+            "python_version": "3"
         },
         "sources": [
             {
@@ -91,11 +90,11 @@
         },
         "trio": {
             "hashes": [
-                "sha256:3887cf18c8bcc894433420305468388dac76932e9668afa1c49aa3806b6accb3",
-                "sha256:f43da357620e5872b3d940a2e3589aa251fd3f881b65a608d742e00809b1ec38"
+                "sha256:16f89f7dcc8f7b9dcdec1fcd863e0c039af6d0f9a22f8dfd56f75d75ec73fd48",
+                "sha256:bb4abb3f4af23f96679e7c8cdabb8b234520f2498550d2cf63ebfd95f2ce27fe"
             ],
-            "markers": "python_version >= '3.7'",
-            "version": "==0.22.2"
+            "markers": "python_version >= '3.8'",
+            "version": "==0.23.1"
         },
         "trio-websocket": {
             "hashes": [
