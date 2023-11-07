@@ -1,5 +1,4 @@
 import time
-from sys import exit
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
@@ -35,7 +34,8 @@ class AuctionBot:
         self.driver = webdriver.Firefox(options=self.driver_options)
         self.driver.implicitly_wait(2)  # wait 2 seconds after every driver command
 
-    def __del__(self):
+    def quit(self):
+        self.driver.close()
         self.driver.quit()
 
     def login(self) -> None:
@@ -121,8 +121,9 @@ class AuctionBot:
             auction_ended_banner = self.driver.find_element(By.CSS_SELECTOR, 'p.mlc-offer-ended-banner__text')
             expired = auction_ended_banner.is_displayed()
             if expired:
-                print_message('The auction has ended!', False)
-                exit(0)
+                # print_message('The auction has ended!', False)
+                self.quit()
+                raise SystemExit('The auction has ended!')
         except NoSuchElementException:
             pass
 
@@ -168,8 +169,9 @@ class AuctionBot:
 
         # check if the price is not too high
         if self.current_price + 1 > self.price_limit:
-            print_message("Price too high!", False)
-            exit(0)
+            # print_message("Price too high!", False)
+            self.quit()
+            raise SystemExit("Price too high!")
 
         # calculate your bid, by default the bids on allegrolokalnie increase by 1zł
         self.users_bid = self.current_price + 1

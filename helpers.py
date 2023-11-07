@@ -76,14 +76,14 @@ def print_login_info() -> None:
 
 
 def print_successful_login_info(username: str) -> None:
-    print(f'{GREEN}Successfully logged in as:{RESET} {BLUE}{username}{RESET}')
+    print(f'{GREEN}Successfully logged in as: {RESET}{BLUE}{username}{RESET}')
     print()
 
 
 def print_auction_info(item: str, current_price: int, your_offer: int) -> None:
     your_offer_color = GREEN if current_price == your_offer else RED
-    print(f'item: {BLUE}{item}{RESET}, current price: {BLUE}{current_price} zł{RESET},'
-          f' your offer: {your_offer_color}{your_offer}{RESET}')
+    print(f'item: {BLUE}{item}{RESET}, current price: {BLUE}{current_price} zł{RESET}, '
+          f'your offer: {your_offer_color}{your_offer}{RESET}')
 
 
 def print_message(message: str, positive: bool = True) -> None:
