@@ -3,7 +3,7 @@ import sys
 
 from auction_bot import AuctionBot
 # from user_credentials_dialog import UserCredentialsDialog
-from helpers import ask_user_for_info, print_login_info, print_message
+from helpers import ask_user_for_info, print_login_info, print_termination_info, print_message
 from selenium.common.exceptions import (NoSuchElementException, NoSuchWindowException,
                                         WebDriverException, InvalidSessionIdException)
 
@@ -56,5 +56,9 @@ except (KeyboardInterrupt, SystemExit, ValueError, NoSuchElementException, NoSuc
         print_message(f'{type(err).__name__}: {err.args[0]}', False)
     else:
         print_message(type(err).__name__, False)
+
+    # FIXME: uncomment this only when creating executable files, or do what you what idc
+    # print_termination_info()
+    # input()
 
     sys.exit(1)
