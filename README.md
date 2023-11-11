@@ -47,17 +47,31 @@
 <br>
 
 ### Linux
+> [!IMPORTANT]
+> On Linux you need ldd version >= 2.38
+> 
+> ![image](https://github.com/wojtazk/allegrolokalnie-auction-bot/assets/48928433/82820224-e94b-4a17-9f21-04e8236b821d)
+>
+> [check out stackoverflow for more info](https://stackoverflow.com/questions/59483026/error-loading-python-lib-tmp-meitueauk-libpython3-7m-so-1-0-dlopen-lib-x8)
+
+
 - Download AuctionBot_[version].run from [releases](https://github.com/wojtazk/allegro-auction-bot/releases)
 - go to the directory where you downloaded the file
   ```shell
   cd [directory]
   ```
+- sometimes you might need to give execute permission to the file ([more about linux permissions](https://www.redhat.com/sysadmin/linux-file-permissions-explained))
+  ```shell
+  chmod u+x AuctionBot_[version].run
+  ```
+  ![image](https://github.com/wojtazk/allegrolokalnie-auction-bot/assets/48928433/3b45b641-5a89-4a2a-b812-574ae2ea5939)
+
 - run the executable
   ```shell
   ./AuctionBot_[version].run
   ```
+  ![image](https://github.com/wojtazk/allegrolokalnie-auction-bot/assets/48928433/037dda4c-0014-4df5-9379-3ec25287934d)
 
-![image](https://github.com/wojtazk/allegro-auction-bot/assets/48928433/0e9cb4ea-1427-4481-b18a-09f118612a04)
 
 <br>
 
