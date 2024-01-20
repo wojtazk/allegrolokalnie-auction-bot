@@ -57,7 +57,7 @@ except (KeyboardInterrupt, SystemExit, ValueError, NoSuchElementException, NoSuc
     else:
         print_message(type(err).__name__, False)
 
-    # FIXME: uncomment this only when creating executable files, or do what you what idc
+    # FIXME: uncomment this only when creating executable files, or do what you want idc
     # print_termination_info()
     # input()
 
